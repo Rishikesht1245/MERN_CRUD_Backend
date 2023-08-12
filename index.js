@@ -1,6 +1,7 @@
 const dotenv = require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const nocache = require("nocache");
 // used to parse req.body
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -11,11 +12,31 @@ const app = express();
 
 //======================== Middle wares ========================//
 // for handling the data coming through url
-app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
+app.use(nocache());
+
+// cross origin set up
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
+// //  ============  setting up credentials in server to access cookies ======//
+// app.use(function (req, res, next) {
+//   res.header("Content-Type", "application/json;charset=UTF-8");
+//   res.header("Access-Control-Allow-Credentials", true);
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 //=========================  Routes ============================//
 const adminRoutes = require("./routes/adminRoutes");

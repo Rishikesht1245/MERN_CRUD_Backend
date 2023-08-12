@@ -21,18 +21,22 @@ exports.LoginVerification = async (req, res) => {
           adminCheck.password
         );
         if (checkPassword) {
-          const token = generateToken(adminCheck._id, adminCheck.isAdmin);
-          //if user is a authorized user set the cookie and send token in json response
+          const token = await generateToken(adminCheck._id, adminCheck.isAdmin);
+
+          // converting mongoose objects into plain javascript object
+          const admin = adminCheck.toObject();
+          admin.token = token;
+
+          //if user is a authorized user set the cookie and send token in json response (cookies not working so trying state approach )
           res
             .cookie("token", token, {
               path: "/",
               httpOnly: true,
               expires: new Date(Date.now() + 1000 * 86400), // 1 day in milliseconds
-              sameSite: "lax", // cross site requests enabling
-              secure: false, // sent only through https
+              sameSite: "none", // cross site requests enabling
             })
             .status(200)
-            .json({ status: "OK", token: token });
+            .json({ status: "OK", loginDetails: admin });
         } else {
           res.json("incorrectPassword");
         }
@@ -43,7 +47,9 @@ exports.LoginVerification = async (req, res) => {
         );
         if (checkPassword) {
           const token = generateToken(managerCheck._id, managerCheck.isAdmin);
-          //if user is a authorized user set the cookie and send token in json response
+          const manager = managerCheck.toObject();
+          manager.token = token;
+          //if user is a authorized user set the cookie and send token in json response (cookies not working)
           res
             .cookie("token", token, {
               path: "/",
@@ -53,7 +59,7 @@ exports.LoginVerification = async (req, res) => {
               secure: false, // sent only through https
             })
             .status(200)
-            .json({ status: "OK", token: token });
+            .json({ status: "OK", loginDetails: manager });
         } else {
           res.json("incorrectPassword");
         }
