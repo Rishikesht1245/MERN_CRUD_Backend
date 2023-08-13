@@ -12,6 +12,9 @@ router.post("/", loginSignup.LoginVerification);
 //signup Verification
 router.post("/signUp", loginSignup.SignUpVerification);
 
+// home data
+router.get("/home", authCheck, loginSignup.getHomeData);
+
 // =====================================================//
 
 // ================== Manager Routes =================== //

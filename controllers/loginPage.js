@@ -2,6 +2,7 @@ const AdminCLTN = require("../models/adminSchema");
 const ManagerCLTN = require("../models/managerSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const ProductCLTN = require("../models/productSchema");
 
 // generate Token : JWt.sign takes payload secret key and expires as arguments
 const generateToken = (id, isAdmin) => {
@@ -73,6 +74,23 @@ exports.LoginVerification = async (req, res) => {
   }
 };
 
+exports.getHomeData = async (req, res) => {
+  try {
+    const productCount = await ProductCLTN.countDocuments({});
+
+    const managerCount = await ManagerCLTN.countDocuments({});
+
+    const count = {
+      managerCount,
+      productCount,
+    };
+
+    res.send({ success: true, count: count });
+  } catch (error) {
+    console.log("Error in Get Home Data :" + error);
+    res.send({ success: false, message: "Get Home data failed" });
+  }
+};
 exports.SignUpVerification = async (req, res) => {
   console.log(req.body);
   const { name, email, password } = req.body;

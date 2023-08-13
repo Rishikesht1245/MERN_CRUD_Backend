@@ -8,6 +8,8 @@ const cookieParser = require("cookie-parser");
 //Cross Origin Resource Sharing : enables frontend to communicate with backend
 const cors = require("cors");
 
+const morgan = require("morgan");
+
 const app = express();
 
 //======================== Middle wares ========================//
@@ -17,15 +19,18 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
 app.use(nocache());
+app.use(morgan("tiny"));
 
 // cross origin set up
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: ["http://localhost:3000"],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// );
+
+app.use(cors());
 
 // //  ============  setting up credentials in server to access cookies ======//
 // app.use(function (req, res, next) {
@@ -41,6 +46,9 @@ app.use(
 //=========================  Routes ============================//
 const adminRoutes = require("./routes/adminRoutes");
 app.use("/", adminRoutes);
+
+const productRoutes = require("./routes/productRoutes");
+app.use("/products", productRoutes);
 
 // ============ connect to mongoDB and start server ===========//
 const PORT = process.env.PORT || 5000;
